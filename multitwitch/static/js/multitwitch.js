@@ -151,6 +151,23 @@ function focus_last_stream_box() {
     stream_boxes = $("#streamlist .stream_name");
     if (stream_boxes.length > 0) {
         stream_boxes[stream_boxes.length - 1].focus();
+        $(stream_boxes[stream_boxes.length-1]).autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "https://api.twitch.tv/kraken/search/streams?limit=5&q=" + request.term,
+                    dataType: "jsonp",
+                    success: function(data) { 
+                        response($.map(data.streams, function(item) {
+                            return {
+                                label: item.channel.display_name,
+                                value: item.channel.name
+                            }
+                        }));
+                    }
+                });
+            },
+            minlength: 2
+        });
     }
 }
 
